@@ -13,7 +13,7 @@ The project brings together four pillars of modern Data Engineering:
 
 ## Physical Data Model
 
-![Data Model](/data_model.png)
+![Data Model](docs/data_model.png)
 
 ## Pipeline Workflow
 
