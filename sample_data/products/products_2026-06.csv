@@ -1,0 +1,6 @@
+product_id,product_name,category,price,launch_date
+P001,iPhone 15,Electronics,899.00,2026-01-01
+P002,MacBook Pro,Electronics,2499.00,2026-01-01
+P003,T-Shirt,Clothing,34.90,2026-01-01
+P004,Coffee Beans,Groceries,15.90,2026-01-01
+P005,Wireless Headphones,Electronics,199.00,2026-06-01

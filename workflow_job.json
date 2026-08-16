@@ -1,0 +1,81 @@
+{
+  "name": "medallion_scd_pipeline",
+  "description": "End-to-end Medallion pipeline on Azure Databricks: Bronze ingestion via Auto Loader (JSON/Parquet/CSV) followed by Silver and Gold transformations with SCD Type 1 and Type 2. Runs on serverless compute.",
+
+  "email_notifications": {
+    "on_failure": ["cleberz21@gmail.com"],
+    "no_alert_for_skipped_runs": true
+  },
+
+  "timeout_seconds": 3600,
+  "max_concurrent_runs": 1,
+
+  "schedule": {
+    "quartz_cron_expression": "0 0 3 * * ?",
+    "timezone_id": "America/Sao_Paulo",
+    "pause_status": "PAUSED"
+  },
+
+  "tags": {
+    "project": "medallion-scd",
+    "environment": "production",
+    "owner": "data_engineering"
+  },
+
+  "git_source": {
+    "git_url": "https://github.com/cleberzumba/medallion-scd-pyspark",
+    "git_provider": "gitHub",
+    "git_branch": "main"
+  },
+
+  "tasks": [
+    {
+      "task_key": "bronze_ingestion",
+      "description": "Auto Loader ingests JSON customers, Parquet orders and CSV products from the ADLS Gen2 raw zone into Bronze Delta tables. Uses trigger(availableNow) — processes all new files, then stops.",
+      "spark_python_task": {
+        "python_file": "etl_autoloader.py",
+        "source": "GIT"
+      },
+      "environment_key": "default",
+      "timeout_seconds": 1800,
+      "max_retries": 2,
+      "min_retry_interval_millis": 120000,
+      "retry_on_timeout": false
+    },
+
+    {
+      "task_key": "silver_gold_transformations",
+      "description": "Silver: cleansing, SCD Type 1 and Type 2 dimensions, orders fact table. Gold: sales by city, sales by category, customer ranking.",
+      "depends_on": [
+        { "task_key": "bronze_ingestion" }
+      ],
+      "spark_python_task": {
+        "python_file": "etl.py",
+        "source": "GIT"
+      },
+      "environment_key": "default",
+      "timeout_seconds": 1800,
+      "max_retries": 1,
+      "min_retry_interval_millis": 60000
+    }
+  ],
+
+  "environments": [
+    {
+      "environment_key": "default",
+      "spec": {
+        "client": "3"
+      }
+    }
+  ],
+
+  "queue": {
+    "enabled": true
+  },
+
+  "run_as": {
+    "user_name": "cleberz21@gmail.com"
+  },
+
+  "format": "MULTI_TASK"
+}
