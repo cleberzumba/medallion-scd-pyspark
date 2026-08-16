@@ -17,7 +17,7 @@ The project brings together four pillars of modern Data Engineering:
 
 ## Pipeline Workflow
 
-![Workflow](/workflow.png)
+![Workflow](docs/workflow.png)
 
 ---
 
